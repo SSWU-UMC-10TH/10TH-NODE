@@ -1,27 +1,30 @@
-import { RowDataPacket } from "mysql2";
-import { pool } from "../../../db.config.js";
+import { prisma } from "../../../db.config.js";
+import { MISSION_STATUS } from "../enums/mission-status.enum.js";
 
+// 피드백 반영 수정: mysql2 pool/raw SQL 대신 Prisma ORM을 사용합니다.
 export const getMissionById = async (missionId: number) => {
-  const [rows] = await pool.query<RowDataPacket[]>(
-    "SELECT * FROM mission WHERE id = ?",
-    [missionId]
-  );
-
-  return rows;
+  return await prisma.mission.findUnique({
+    where: { id: missionId },
+  });
 };
 
+// 피드백 반영 수정: mysql2 pool/raw SQL 대신 Prisma ORM을 사용합니다.
 export const getUserMission = async (userId: number, missionId: number) => {
-  const [rows] = await pool.query<RowDataPacket[]>(
-    "SELECT * FROM user_mission WHERE user_id = ? AND mission_id = ?",
-    [userId, missionId]
-  );
-
-  return rows;
+  return await prisma.userMission.findFirst({
+    where: {
+      userId,
+      missionId,
+    },
+  });
 };
 
+// 피드백 반영 수정: status는 공통 상수 MISSION_STATUS를 사용합니다.
 export const addUserMission = async (userId: number, missionId: number) => {
-  await pool.query(
-    "INSERT INTO user_mission (user_id, mission_id, status) VALUES (?, ?, ?)",
-    [userId, missionId, "진행중"]
-  );
+  return await prisma.userMission.create({
+    data: {
+      userId,
+      missionId,
+      status: MISSION_STATUS.IN_PROGRESS,
+    },
+  });
 };
