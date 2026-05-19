@@ -1,30 +1,31 @@
 import { prisma } from "../../../db.config.js";
-import { RowDataPacket } from "mysql2";
-import { pool } from "../../../db.config.js";
+import { MISSION_STATUS } from "../../missions/enums/mission-status.enum.js";
 
+// 피드백 반영 수정: mysql2 pool/raw SQL 대신 Prisma ORM을 사용합니다.
 export const getStoreById = async (storeId: number) => {
-  const [rows] = await pool.query<RowDataPacket[]>(
-    "SELECT * FROM store WHERE id = ?",
-    [storeId]
-  );
-
-  return rows;
+  return await prisma.store.findUnique({
+    where: { id: storeId },
+  });
 };
 
+// 피드백 반영 수정: INSERT raw SQL 대신 Prisma create를 사용하되, 생성 동작은 기존과 동일하게 유지합니다.
 export const addReview = async (
   userId: number,
   storeId: number,
   rating: number,
   content: string
 ) => {
-  const query = `
-    INSERT INTO review (user_id, store_id, rating, content)
-    VALUES (?, ?, ?, ?)
-  `;
-
-  await pool.query(query, [userId, storeId, rating, content]);
+  return await prisma.review.create({
+    data: {
+      userId,
+      storeId,
+      rating,
+      content,
+    },
+  });
 };
 
+// 피드백 반영 수정: INSERT raw SQL 대신 Prisma create를 사용하되, deadline은 Date 타입으로 변환해 저장합니다.
 export const addMission = async (
   storeId: number,
   title: string,
@@ -32,12 +33,15 @@ export const addMission = async (
   rewardPoint: number,
   deadline: string
 ) => {
-  const query = `
-    INSERT INTO mission (store_id, title, description, reward_point, deadline)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-
-  await pool.query(query, [storeId, title, description, rewardPoint, deadline]);
+  return await prisma.mission.create({
+    data: {
+      storeId,
+      title,
+      description,
+      rewardPoint,
+      deadline: new Date(deadline),
+    },
+  });
 };
 
 export const getMyReviews = async (userId: number, cursor?: number) => {
@@ -63,11 +67,24 @@ export const getMissionsByStoreId = async (storeId: number) => {
   });
 };
 
-export const completeMission = async (userMissionId: number) => {
-  return await prisma.userMission.update({
+export const getUserMissionById = async (userMissionId: number) => {
+  return await prisma.userMission.findUnique({
     where: { id: userMissionId },
+  });
+};
+
+// 피드백 반영 수정: 이미 완료된 미션 재요청이 동시에 들어와도 status 조건으로 한 번 더 보호합니다.
+export const completeMissionIfNotCompleted = async (userMissionId: number) => {
+  return await prisma.userMission.updateMany({
+    where: {
+      id: userMissionId,
+      status: {
+        not: MISSION_STATUS.COMPLETE,
+      },
+    },
     data: {
-      status: "COMPLETE",
+      status: MISSION_STATUS.COMPLETE,
+      completedAt: new Date(),
     },
   });
 };

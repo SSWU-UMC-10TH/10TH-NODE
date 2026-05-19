@@ -32,6 +32,7 @@ export const responseFromUser = ({ user, preferences }: any) => {
   return {
     email: user.email,
     name: user.name,
-    preferCategory: preferences.map((p: any) => p.name),
+    // 피드백 반영 수정: Prisma include 결과 구조에 맞춰 선호 카테고리명을 반환합니다.
+    preferCategory: preferences.map((p: any) => p.foodCategory.name),
   };
 };
