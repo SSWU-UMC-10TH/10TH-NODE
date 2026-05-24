@@ -1,14 +1,31 @@
 // 1. 회원가입 요청 데이터의 설계도를 만듭니다.
 export interface UserSignUpRequest {
+  /** 로그인에 사용할 이메일 */
   email: string;
+  /** 로그인 비밀번호 */
   password: string;
+  /** 회원 이름 */
   name: string;
+  /** 회원 성별 */
   gender: string;
+  /** 생년월일 */
   birth: string;
   address?: string;       // ?가 붙으면 '없을 수도 있음(선택)'이라는 뜻이에요!
+  /** 상세 주소 */
   detailAddress?: string;
+  /** 연락처 */
   phoneNumber: string;
+  /** 선호 음식 카테고리 ID 목록 */
   preferences: number[];
+}
+
+export interface UserSignUpResponse {
+  /** 가입한 회원 이메일 */
+  email: string;
+  /** 가입한 회원 이름 */
+  name: string;
+  /** 선호 음식 카테고리 이름 목록 */
+  preferCategory: string[];
 }
 
 // 2. 요청받은 데이터를 우리 시스템에 맞는 데이터로 변환해주는 함수입니다. 
@@ -28,7 +45,7 @@ export const bodyToUser = (body: UserSignUpRequest) => {
   };
 };
 
-export const responseFromUser = ({ user, preferences }: any) => {
+export const responseFromUser = ({ user, preferences }: any): UserSignUpResponse => {
   return {
     email: user.email,
     name: user.name,
