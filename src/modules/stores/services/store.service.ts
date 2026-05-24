@@ -18,31 +18,12 @@ const ensurePositiveNumber = (value: number, code: string, message: string) => {
   }
 };
 
-const ensureNonEmptyString = (value: string, code: string, message: string) => {
-  if (typeof value !== "string" || value.trim().length === 0) {
-    throwError(StatusCodes.BAD_REQUEST, code, message);
-  }
-};
-
-const ensureRatingRange = (rating: number) => {
-  if (typeof rating !== "number" || !Number.isFinite(rating) || rating < 0 || rating > 5) {
-    throwError(StatusCodes.BAD_REQUEST, "REVIEW400", "리뷰 평점은 0 이상 5 이하여야 합니다.");
-  }
-};
-
-const ensureRewardPointRange = (rewardPoint: number) => {
-  if (!Number.isInteger(rewardPoint) || rewardPoint < 0) {
-    throwError(StatusCodes.BAD_REQUEST, "MISSION400", "미션 보상 포인트는 0 이상의 정수여야 합니다.");
-  }
-};
-
 export const createReview = async (storeId: number, data: AddReviewRequest) => {
   ensurePositiveNumber(storeId, "STORE400", "올바른 가게 ID가 필요합니다.");
 
-  // 피드백 반영: falsy 검사 대신 숫자 범위와 문자열 값을 타입별로 검증합니다.
-  ensurePositiveNumber(data.userId, "USER400", "올바른 사용자 ID가 필요합니다.");
-  ensureRatingRange(data.rating);
-  ensureNonEmptyString(data.content, "REVIEW400", "리뷰 내용이 필요합니다.");
+  if (!data.userId || !data.rating || !data.content) {
+    throwError(StatusCodes.BAD_REQUEST, "REVIEW400", "리뷰 필수 값이 누락되었습니다.");
+  }
 
   const store = await getStoreById(storeId);
 
@@ -60,11 +41,9 @@ export const createMission = async (
 ) => {
   ensurePositiveNumber(storeId, "STORE400", "올바른 가게 ID가 필요합니다.");
 
-  // 피드백 반영: rewardPoint 범위와 문자열 필드를 각각 검증합니다.
-  ensureNonEmptyString(data.title, "MISSION400", "미션 제목이 필요합니다.");
-  ensureNonEmptyString(data.description, "MISSION400", "미션 설명이 필요합니다.");
-  ensureRewardPointRange(data.rewardPoint);
-  ensureNonEmptyString(data.deadline, "MISSION400", "미션 마감일이 필요합니다.");
+  if (!data.title || !data.description || !data.rewardPoint || !data.deadline) {
+    throwError(StatusCodes.BAD_REQUEST, "MISSION400", "미션 필수 값이 누락되었습니다.");
+  }
 
   const store = await getStoreById(storeId);
 
@@ -85,7 +64,6 @@ export const createMission = async (
 export const getMyReviewsService = async (userId: number, cursor?: number) => {
   ensurePositiveNumber(userId, "USER400", "올바른 사용자 ID가 필요합니다.");
 
-  // 피드백 반영: 커서는 정수 여부와 양수 범위를 함께 검증합니다.
   if (cursor !== undefined && (!Number.isInteger(cursor) || cursor <= 0)) {
     throwError(StatusCodes.BAD_REQUEST, "REVIEW400", "올바른 커서 값이 필요합니다.");
   }

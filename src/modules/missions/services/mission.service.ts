@@ -16,8 +16,7 @@ export const challengeMission = async (
     throwError(StatusCodes.BAD_REQUEST, "MISSION400", "올바른 미션 ID가 필요합니다.");
   }
 
-  // 피드백 반영: falsy 검사 대신 사용자 ID의 정수/양수 범위를 확인합니다.
-  if (!Number.isInteger(data.userId) || data.userId <= 0) {
+  if (!data.userId || !Number.isInteger(data.userId)) {
     throwError(StatusCodes.BAD_REQUEST, "USER400", "올바른 사용자 ID가 필요합니다.");
   }
 
