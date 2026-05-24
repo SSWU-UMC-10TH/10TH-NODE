@@ -17,12 +17,32 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   }
 
   if (err instanceof CustomError) {
+    // 피드백 반영: 운영 로그를 추적하기 쉽도록 에러 로그 포맷을 통일합니다.
+    console.error({
+      level: "error",
+      method: req.method,
+      path: req.originalUrl,
+      statusCode: err.statusCode,
+      code: err.code,
+      message: err.message,
+      details: err.details ?? null,
+    });
+
     return res
       .status(err.statusCode)
       .json(errorResponse(err.code, err.message, err.details ?? null));
   }
 
-  console.error(err);
+  // 피드백 반영: 예상하지 못한 에러도 동일한 로그 구조로 남깁니다.
+  console.error({
+    level: "error",
+    method: req.method,
+    path: req.originalUrl,
+    statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+    code: "COMMON500",
+    message: err instanceof Error ? err.message : "Unknown error",
+    details: err,
+  });
 
   return res
     .status(StatusCodes.INTERNAL_SERVER_ERROR)
