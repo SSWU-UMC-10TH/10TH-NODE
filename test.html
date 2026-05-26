@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>내 API 테스트하기</title>
+</head>
+<body>
+    <h1>회원가입 테스트</h1>
+    <button id="signupButton">가입 요청 (성공)</button>
+    <button id="signupButtonFail">가입 요청 (실패 - 이메일 중복)</button>
+
+    <script>
+        // 성공 버튼 클릭 시
+        document.getElementById('signupButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: "success@test.com" })
+                });
+                const responseData = await response.json();
+                console.log('%c[응답] 성공:', 'color: green;', responseData);
+            } catch (error) {
+                console.error('%c[응답] 실패:', 'color: red;', error);
+            }
+        });
+
+        // 실패 버튼 클릭 시
+        document.getElementById('signupButtonFail').addEventListener('click', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: "fail@test.com" }) // 실패 유도
+                });
+                const responseData = await response.json();
+                
+                // 만약 백엔드에서 에러를 status(400) 등으로 보내면 catch가 아니라 여기서 처리될 수 있습니다.
+                if (responseData.resultType === "FAIL") {
+                    console.error('%c[응답] 실패:', 'color: red;', responseData);
+                } else {
+                    console.log('%c[응답] 성공:', 'color: green;', responseData);
+                }
+            } catch (error) {
+                console.error('%c[응답] 에러:', 'color: red;', error);
+            }
+        });
+    </script>
+</body>
+</html>
