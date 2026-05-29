@@ -4,11 +4,17 @@ import {
   bodyToReview,
   bodyToMission,
   paramsToUserMission,
-
   StoreCreateRequest,
   ReviewCreateRequest,
   MissionCreateRequest
 } from "../dtos/store.dto.js";
+
+import { 
+  createStore, 
+  createReview, 
+  createMission, 
+  createUserMission 
+} from "../services/store.service.js";
 
 // ==========================================================
 // [1-1] 특정 지역에 가게 추가하기
@@ -20,7 +26,7 @@ export const handleStoreCreate = async (req: Request, res: Response, next: any) 
     
     // 2. DTO를 사용해서 클라이언트가 보낸 Body 데이터를 예쁘게 포장합니다.
     const storeData = bodyToStore(req.body as StoreCreateRequest);
-
+    const result = await createStore(storeData, regionId);
     res.status(200).json({ message: "가게 추가 완료!", data: storeData });
   } catch (error) {
     next(error);
@@ -33,7 +39,8 @@ export const handleStoreCreate = async (req: Request, res: Response, next: any) 
 export const handleReviewCreate = async (req: Request, res: Response, next: any) => {
   try {
     const storeId = parseInt(req.params.storeId as string);
-    const reviewData = bodyToReview(req.body, storeId);
+    const reviewData = bodyToReview(req.body as ReviewCreateRequest, storeId);
+    const result = await createReview(reviewData, storeId);
 
     /* TODO: Service 호출 부분 */
 
@@ -49,7 +56,8 @@ export const handleReviewCreate = async (req: Request, res: Response, next: any)
 export const handleMissionCreate = async (req: Request, res: Response, next: any) => {
   try {
     const storeId = parseInt(req.params.storeId as string);
-    const missionData = bodyToMission(req.body, storeId);
+    const missionData = bodyToMission(req.body as MissionCreateRequest, storeId);
+    const result = await createMission(missionData, storeId);
 
     /* TODO: Service 호출 부분 */
 
@@ -70,7 +78,7 @@ export const handleUserMissionCreate = async (req: Request, res: Response, next:
     
     // DTO를 사용해서 포장합니다. (Body 데이터는 없으므로 안 넘깁니다!)
     const userMissionData = paramsToUserMission(userId, missionId);
-
+    const result = await createUserMission(userMissionData); // 서비스 호출!
     /* TODO: Service 호출 부분 */
 
     res.status(200).json({ message: "미션 도전 컨트롤러 호출 성공!" });

@@ -31,3 +31,20 @@ export const userSignUp = async (data: any) => {
 
   return responseFromUser( user, preferences );
 };
+
+import bcrypt from 'bcrypt'; // 해싱 라이브러리
+
+export const signUpService = async (userData: any) => {
+    // 1. 비밀번호 해싱 (비밀번호를 암호화된 문자열로 변환)
+    const saltRounds = 10; // 해싱 강도
+    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+
+    // 2. 원래 비밀번호를 암호화된 비밀번호로 교체
+    const userDataToSave = {
+        ...userData,
+        password: hashedPassword
+    };
+
+    // 3. 해싱된 비밀번호가 담긴 데이터를 레포지토리로 전송
+    return await addUser(userDataToSave);
+};
