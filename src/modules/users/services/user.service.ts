@@ -1,7 +1,5 @@
-import bcrypt from "bcrypt";
-import { StatusCodes } from "http-status-codes";
-import { throwError } from "../../../common/errors.js";
-import { UserSignUpRequest, responseFromUser } from "../dtos/user.dto.js";
+import { UserSignUpRequest } from "../dtos/user.dto.js"; //인터페이스 가져오기 
+import { responseFromUser } from "../dtos/user.dto.js";
 import {
   addUser,
   getUser,
@@ -9,47 +7,27 @@ import {
   setPreference,
 } from "../repositories/user.repository.js";
 
-export const userSignUp = async (data: UserSignUpRequest) => {
-  if (
-    !data.email ||
-    !data.password ||
-    !data.name ||
-    !data.gender ||
-    !data.birth ||
-    !data.phoneNumber
-  ) {
-    throwError(
-      StatusCodes.BAD_REQUEST,
-      "USER400",
-      "회원가입 필수 값이 누락되었습니다."
-    );
-  }
-
-  const hashedPassword = await bcrypt.hash(data.password, 10);
-
+export const userSignUp = async (data: any) => {
   const joinUserId = await addUser({
-    password: hashedPassword,
     email: data.email,
     name: data.name,
     gender: data.gender,
-    birth: new Date(data.birth),
-    address: data.address ?? "",
-    detailAddress: data.detailAddress ?? null,
+    birth: new Date(data.birth), // 문자열을 Date 객체로 변환해서 넘겨줍니다. 
+    address: data.address,
+    detailAddress: data.detailAddress,
     phoneNumber: data.phoneNumber,
   });
 
   if (joinUserId === null) {
-    throwError(StatusCodes.CONFLICT, "USER409", "이미 존재하는 이메일입니다.");
+    throw new Error("이미 존재하는 이메일입니다.");
   }
 
-  const userId = joinUserId as number;
-
-  for (const preference of data.preferences ?? []) {
-    await setPreference(userId, preference);
+  for (const preference of data.preferences) {
+    await setPreference(joinUserId, preference);
   }
 
-  const user = await getUser(userId);
-  const preferences = await getUserPreferencesByUserId(userId);
+  const user = await getUser(joinUserId);
+  const preferences = await getUserPreferencesByUserId(joinUserId);
 
-  return responseFromUser({ user, preferences });
+  return responseFromUser( user, preferences );
 };

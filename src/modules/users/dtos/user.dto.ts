@@ -1,7 +1,6 @@
 // 1. 회원가입 요청 데이터의 설계도를 만듭니다.
 export interface UserSignUpRequest {
   email: string;
-  password: string;
   name: string;
   gender: string;
   birth: string;
@@ -17,7 +16,6 @@ export const bodyToUser = (body: UserSignUpRequest) => {
 
   return {
     email: body.email, //필수 
-    password: body.password,
     name: body.name, // 필수
     gender: body.gender, // 필수
     birth, // 필수
@@ -28,11 +26,18 @@ export const bodyToUser = (body: UserSignUpRequest) => {
   };
 };
 
-export const responseFromUser = ({ user, preferences }: any) => {
+// 3. 클라이언트에게 응답할 데이터의 설계도를 만듭니다. (응답용 DTO 인터페이스)
+export interface UserResponseDTO {
+  email: string;
+  name: string;
+  preferCategory: string[]; // 응답할 때는 카테고리 이름(문자열) 배열로 반환한다고 가정
+}
+
+// 4. Service에서 받아온 유저 정보 + 선호 카테고리를 클라이언트에게 보여줄 형식으로 변환하는 함수입니다!
+export const responseFromUser = (user: any, preferCategory: string[]): UserResponseDTO => {
   return {
     email: user.email,
     name: user.name,
-    // 피드백 반영 수정: Prisma include 결과 구조에 맞춰 선호 카테고리명을 반환합니다.
-    preferCategory: preferences.map((p: any) => p.foodCategory.name),
+    preferCategory: preferCategory,
   };
 };
