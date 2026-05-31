@@ -1,6 +1,4 @@
 export interface AddReviewRequest {
-  /** 리뷰 작성 회원 ID */
-  userId: number;
   /** 리뷰 평점 (0 이상 5 이하) */
   rating: number;
   /** 리뷰 내용 */
@@ -12,7 +10,7 @@ export interface AddMissionRequest {
   title: string;
   /** 미션 설명 */
   description: string;
-  /** 미션 보상 포인트 (0 이상의 정수) */
+  /** 미션 보상 포인트 */
   rewardPoint: number;
   /** 미션 마감일 */
   deadline: string;
@@ -66,9 +64,9 @@ export interface StoreMissionResponse {
   rewardPoint: number;
   /** 미션 마감일 */
   deadline: Date;
-  /** 미션 생성 시각 */
+  /** 생성 시각 */
   createdAt: Date;
-  /** 미션 수정 시각 */
+  /** 수정 시각 */
   updatedAt: Date;
 }
 

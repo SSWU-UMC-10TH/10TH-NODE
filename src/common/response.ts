@@ -20,7 +20,6 @@ export interface ApiErrorResponse<T = null> {
   result: T;
 }
 
-// 피드백 반영: HTTP status와 별도로 응답 code를 호출부에서 명시합니다.
 export const successResponse = <T>(
   code: string,
   result: T,

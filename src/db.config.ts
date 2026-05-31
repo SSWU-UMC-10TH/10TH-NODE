@@ -21,6 +21,7 @@ const adapter = new PrismaMariaDb({
   database: process.env.DB_NAME || "umc_week5",
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
   connectionLimit: 10,
+  allowPublicKeyRetrieval: true,
 });
 
 export const prisma = new PrismaClient({

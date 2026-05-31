@@ -5,3 +5,7 @@ node_modules/
 .env
 .env.*
 /src/generated/prisma
+
+# local server logs
+server.out.log
+server.err.log
