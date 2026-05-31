@@ -109,7 +109,7 @@
 					},
 					"password": {
 						"type": "string",
-						"description": "로그인 비밀번호"
+						"description": "로그인에 사용할 비밀번호"
 					},
 					"name": {
 						"type": "string",
@@ -124,7 +124,8 @@
 						"description": "생년월일"
 					},
 					"address": {
-						"type": "string"
+						"type": "string",
+						"description": "주소"
 					},
 					"detailAddress": {
 						"type": "string",
@@ -152,6 +153,207 @@
 					"phoneNumber",
 					"preferences"
 				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TokenResponse": {
+				"properties": {
+					"accessToken": {
+						"type": "string",
+						"description": "API 요청에 사용할 Access Token"
+					},
+					"refreshToken": {
+						"type": "string",
+						"description": "Access Token 재발급에 사용할 Refresh Token"
+					}
+				},
+				"required": [
+					"accessToken",
+					"refreshToken"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApiSuccessResponse_TokenResponse_": {
+				"properties": {
+					"isSuccess": {
+						"type": "boolean",
+						"enum": [
+							true
+						],
+						"nullable": false,
+						"description": "요청 성공 여부"
+					},
+					"code": {
+						"type": "string",
+						"description": "응답 코드"
+					},
+					"message": {
+						"type": "string",
+						"description": "응답 메시지"
+					},
+					"result": {
+						"$ref": "#/components/schemas/TokenResponse",
+						"description": "응답 데이터"
+					}
+				},
+				"required": [
+					"isSuccess",
+					"code",
+					"message",
+					"result"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserLoginRequest": {
+				"properties": {
+					"email": {
+						"type": "string",
+						"description": "로그인에 사용할 이메일"
+					},
+					"password": {
+						"type": "string",
+						"description": "로그인에 사용할 비밀번호"
+					}
+				},
+				"required": [
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RefreshTokenRequest": {
+				"properties": {
+					"refreshToken": {
+						"type": "string",
+						"description": "로그인 시 발급받은 Refresh Token"
+					}
+				},
+				"required": [
+					"refreshToken"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserProfileResponse": {
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"gender": {
+						"type": "string"
+					},
+					"birth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"address": {
+						"type": "string"
+					},
+					"detailAddress": {
+						"type": "string",
+						"nullable": true
+					},
+					"phoneNumber": {
+						"type": "string"
+					},
+					"preferCategory": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"email",
+					"name",
+					"gender",
+					"birth",
+					"address",
+					"detailAddress",
+					"phoneNumber",
+					"preferCategory"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApiSuccessResponse_UserProfileResponse_": {
+				"properties": {
+					"isSuccess": {
+						"type": "boolean",
+						"enum": [
+							true
+						],
+						"nullable": false,
+						"description": "요청 성공 여부"
+					},
+					"code": {
+						"type": "string",
+						"description": "응답 코드"
+					},
+					"message": {
+						"type": "string",
+						"description": "응답 메시지"
+					},
+					"result": {
+						"$ref": "#/components/schemas/UserProfileResponse",
+						"description": "응답 데이터"
+					}
+				},
+				"required": [
+					"isSuccess",
+					"code",
+					"message",
+					"result"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserProfileUpdateRequest": {
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "회원 이름"
+					},
+					"gender": {
+						"type": "string",
+						"description": "회원 성별"
+					},
+					"birth": {
+						"type": "string",
+						"description": "생년월일"
+					},
+					"address": {
+						"type": "string",
+						"description": "주소"
+					},
+					"detailAddress": {
+						"type": "string",
+						"description": "상세 주소"
+					},
+					"phoneNumber": {
+						"type": "string",
+						"description": "연락처"
+					},
+					"preferences": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array",
+						"description": "선호 음식 카테고리 ID 목록"
+					}
+				},
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -193,11 +395,6 @@
 			},
 			"AddReviewRequest": {
 				"properties": {
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"description": "리뷰 작성 회원 ID"
-					},
 					"rating": {
 						"type": "number",
 						"format": "double",
@@ -209,7 +406,6 @@
 					}
 				},
 				"required": [
-					"userId",
 					"rating",
 					"content"
 				],
@@ -229,7 +425,7 @@
 					"rewardPoint": {
 						"type": "number",
 						"format": "double",
-						"description": "미션 보상 포인트 (0 이상의 정수)"
+						"description": "미션 보상 포인트"
 					},
 					"deadline": {
 						"type": "string",
@@ -414,12 +610,12 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time",
-						"description": "미션 생성 시각"
+						"description": "생성 시각"
 					},
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time",
-						"description": "미션 수정 시각"
+						"description": "수정 시각"
 					}
 				},
 				"required": [
@@ -556,20 +752,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"ChallengeMissionRequest": {
-				"properties": {
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"description": "미션에 도전하는 회원 ID"
-					}
-				},
-				"required": [
-					"userId"
-				],
-				"type": "object",
-				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -606,20 +788,10 @@
 								}
 							}
 						}
-					},
-					"409": {
-						"description": "이미 존재하는 이메일",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiErrorResponse"
-								}
-							}
-						}
 					}
 				},
 				"description": "회원가입 API",
-				"summary": "신규 회원을 생성합니다.",
+				"summary": "신규 회원을 생성하거나 이미 존재하는 회원 정보를 갱신합니다.",
 				"tags": [
 					"User"
 				],
@@ -631,6 +803,208 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UserSignUpRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiSuccessResponse_TokenResponse_"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "로그인 필수값 누락",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "로그인 실패",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "로그인 API",
+				"summary": "이메일과 비밀번호로 로그인하고 JWT Access/Refresh Token을 발급합니다.",
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserLoginRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/refresh": {
+			"post": {
+				"operationId": "Refresh",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiSuccessResponse_TokenResponse_"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Refresh Token 누락",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "유효하지 않은 토큰",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Access Token 재발급 API",
+				"summary": "Refresh Token으로 새로운 Access/Refresh Token을 발급합니다.",
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RefreshTokenRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/me": {
+			"get": {
+				"operationId": "GetMe",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiSuccessResponse_UserProfileResponse_"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "로그인 필요",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "내 정보 조회 API",
+				"summary": "Bearer Token으로 로그인한 사용자의 정보를 조회합니다.",
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "UpdateMe",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiSuccessResponse_UserProfileResponse_"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "로그인 필요",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "내 정보 수정 API",
+				"summary": "Bearer Token으로 로그인한 사용자의 전화번호, 생일, 선호 카테고리 등을 수정합니다.",
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserProfileUpdateRequest"
 							}
 						}
 					}
@@ -661,6 +1035,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "로그인 필요",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "존재하지 않는 가게",
 						"content": {
@@ -673,7 +1057,7 @@
 					}
 				},
 				"description": "리뷰 등록 API",
-				"summary": "특정 가게에 리뷰를 등록합니다.",
+				"summary": "Bearer Token으로 로그인한 사용자가 특정 가게에 리뷰를 등록합니다.",
 				"tags": [
 					"Store"
 				],
@@ -686,6 +1070,14 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				],
@@ -725,6 +1117,16 @@
 							}
 						}
 					},
+					"401": {
+						"description": "로그인 필요",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
 						"description": "존재하지 않는 가게",
 						"content": {
@@ -737,7 +1139,7 @@
 					}
 				},
 				"description": "미션 등록 API",
-				"summary": "특정 가게에 미션을 등록합니다.",
+				"summary": "Bearer Token으로 로그인한 사용자만 특정 가게에 미션을 등록할 수 있습니다.",
 				"tags": [
 					"Store"
 				],
@@ -750,6 +1152,14 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				],
@@ -822,7 +1232,17 @@
 						}
 					},
 					"400": {
-						"description": "회원 ID 또는 커서 값 오류",
+						"description": "커서 값 오류",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "로그인 필요",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -833,7 +1253,7 @@
 					}
 				},
 				"description": "내 리뷰 목록 조회 API",
-				"summary": "회원이 작성한 리뷰 목록을 커서 기반으로 조회합니다.",
+				"summary": "Bearer Token으로 로그인한 사용자가 작성한 리뷰 목록을 커서 기반으로 조회합니다.",
 				"tags": [
 					"Store"
 				],
@@ -841,21 +1261,19 @@
 				"parameters": [
 					{
 						"in": "query",
-						"name": "userId",
-						"required": false,
-						"schema": {
-							"default": 1,
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
 						"name": "cursor",
 						"required": false,
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]
@@ -885,8 +1303,18 @@
 							}
 						}
 					},
+					"401": {
+						"description": "로그인 필요",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					},
 					"404": {
-						"description": "도전 중인 미션 없음",
+						"description": "진행 중인 미션 없음",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -907,7 +1335,7 @@
 					}
 				},
 				"description": "미션 완료 API",
-				"summary": "도전 중인 미션을 완료 상태로 변경합니다.",
+				"summary": "Bearer Token으로 로그인한 사용자의 진행 중인 미션을 완료 상태로 변경합니다.",
 				"tags": [
 					"Store"
 				],
@@ -920,6 +1348,14 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]
@@ -940,7 +1376,17 @@
 						}
 					},
 					"400": {
-						"description": "미션 또는 회원 ID 오류",
+						"description": "미션 ID 오류",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "로그인 필요",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -960,7 +1406,7 @@
 						}
 					},
 					"409": {
-						"description": "이미 도전 중이거나 완료한 미션",
+						"description": "이미 진행 중이거나 완료한 미션",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -971,7 +1417,7 @@
 					}
 				},
 				"description": "미션 도전 API",
-				"summary": "회원이 특정 미션에 도전합니다.",
+				"summary": "Bearer Token으로 로그인한 사용자가 특정 미션에 도전합니다.",
 				"tags": [
 					"Mission"
 				],
@@ -985,18 +1431,16 @@
 							"format": "double",
 							"type": "number"
 						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/ChallengeMissionRequest"
-							}
+					},
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
-				}
+				]
 			}
 		}
 	},
