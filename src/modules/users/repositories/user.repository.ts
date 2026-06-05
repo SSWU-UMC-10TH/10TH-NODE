@@ -1,5 +1,4 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { pool } from "../../../db.config.js";
 import { prisma } from "../../../db.config.js";
 
 // User 데이터 삽입
@@ -85,46 +84,42 @@ export const getUserReviews = async (userId: number, cursor: number) => {
 };
 
 export const getOngoingMissionsByUserId = async (userId: number, cursor: number | null, limit: number) => {
-    const conn = await pool.getConnection();
-    try {
-        let query = "";
-        let params = [];
-
-        // 유저가 도전 중(status = '진행 중')인 미션 정보를 가게 이름과 함께 JOIN
-        const baseQuery = `
-            SELECT um.id, um.mission_id, um.status, m.reward, m.mission_spec, s.name as store_name
-            FROM user_mission um
-            JOIN mission m ON um.mission_id = m.id
-            JOIN store s ON m.store_id = s.id
-            WHERE um.user_id = ? AND um.status = '진행 중'
-        `;
-
-        if (cursor) {
-            query = `${baseQuery} AND um.id < ? ORDER BY um.id DESC LIMIT ?`;
-            params = [userId, cursor, limit];
-        } else {
-            query = `${baseQuery} ORDER BY um.id DESC LIMIT ?`;
-            params = [userId, limit];
-        }
-
-        const [rows] = await conn.query(query, params);
-        return rows as any[];
-    } catch (err) {
-        throw err;
-    } finally {
-        conn.release();
-    }
+    return await prisma.userMission.findMany({
+    where: {
+      user_id: userId,
+      status: "진행 중",
+      ...(cursor ? { id: { lt: cursor } } : {}),
+    },
+    orderBy: {
+      id: "desc",
+    },
+    take: limit,
+    include: {
+      mission: {
+        select: {
+          id: true,
+          reward: true,
+          mission_spec: true,
+          store: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
 };
 
 export const updateUserMissionStatus = async (userMissionId: number, status: string) => {
-    const conn = await pool.getConnection();
-    try {
-        const query = `UPDATE user_mission SET status = ? WHERE id = ?`;
-        await conn.query(query, [status, userMissionId]);
-        return true;
-    } catch (err) {
-        throw err;
-    } finally {
-        conn.release();
-    }
+    await prisma.userMission.update({
+    where: {
+      id: userMissionId,
+    },
+    data: {
+      status,
+    },
+  });
+
+  return true;
 };

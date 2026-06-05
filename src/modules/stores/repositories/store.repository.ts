@@ -79,42 +79,28 @@ export const getAllStoreReviews = async (storeId: number, cursor: number) => {
 
 // 특정 가게의 미션 목록
 
-import { pool } from "../../../db.config.js";
+export const getMissionsByStoreId = async (
+  storeId: number,
+  cursor: number | null,
+  limit: number
+) => {
+  const missions = await prisma.mission.findMany({
+    where: {
+      storeId,
+      ...(cursor ? { id: { lt: cursor } } : {}),
+    },
+    select: {
+      id: true,
+      storeId: true,
+      reward: true,
+      deadline: true,
+      missionSpec: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
+    take: limit,
+  });
 
-export const getMissionsByStoreId = async (storeId: number, cursor: number | null, limit: number) => {
-    const conn = await pool.getConnection();
-    try {
-        let query = "";
-        let params = [];
-
-        // 커서(마지막으로 본 ID)가 존재할 때와 처음 조회할 때의 SQL 분기 처리
-        if (cursor) {
-            // 마지막으로 본 미션 ID(cursor) 다음 버전부터 limit 개수만큼 긁어옴 (최신순정렬 기준)
-            query = `
-                SELECT id, store_id, reward, deadline, mission_spec 
-                FROM mission 
-                WHERE store_id = ? AND id < ? 
-                ORDER BY id DESC 
-                LIMIT ?
-            `;
-            params = [storeId, cursor, limit];
-        } else {
-            // 처음 조회할 때는 커서 조건 없이 해당 가게의 최신 미션부터 limit 개수만큼 가져옴
-            query = `
-                SELECT id, store_id, reward, deadline, mission_spec 
-                FROM mission 
-                WHERE store_id = ? 
-                ORDER BY id DESC 
-                LIMIT ?
-            `;
-            params = [storeId, limit];
-        }
-
-        const [rows] = await conn.query(query, params);
-        return rows as any[];
-    } catch (err) {
-        throw err;
-    } finally {
-        conn.release(); // 커넥션 풀 반환 필수!
-    }
+  return missions;
 };
