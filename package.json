@@ -1,0 +1,28 @@
+{
+  "name": "10th-node",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "SSWU 10기 Node 스터디 A조",
+  "homepage": "https://github.com/jed9034/10TH-NODE#readme",
+  "bugs": {
+    "url": "https://github.com/jed9034/10TH-NODE/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jed9034/10TH-NODE.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "nodemon --exec node src/index.js"
+  },
+  "dependencies": {
+    "express": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
